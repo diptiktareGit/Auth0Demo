@@ -1,0 +1,1711 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizza 42</title>
+  <link rel="icon" type="image/svg+xml" href="/logo.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset ────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --red:    #e63329;
+      --red2:   #c0392b;
+      --dark:   #1a1a1a;
+      --dark2:  #111111;
+      --cream:  #fdf6ec;
+      --text:   #222222;
+      --muted:  #777777;
+      --card:   #ffffff;
+      --border: #eeeeee;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP HEADER ──────────────────────────────────────────────────────── */
+    header {
+      background: var(--dark2);
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 0 1.75rem; height: 48px;
+      position: sticky; top: 0; z-index: 200;
+      gap: 0.25rem;
+    }
+    .header-nav { display: flex; align-items: center; gap: 0.25rem; }
+
+    .nav-link {
+      background: transparent; color: #ccc;
+      border: none; padding: 6px 14px; border-radius: 4px;
+      font-size: 0.85rem; font-weight: 500; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .nav-link.active { color: #fff; background: rgba(255,255,255,0.12); }
+
+    .cart-pill {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 5px 12px; border-radius: 24px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cart-pill:hover { background: rgba(255,255,255,0.18); }
+    .cart-badge {
+      background: var(--red); color: #fff;
+      border-radius: 50%; font-size: 0.65rem;
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+    }
+
+    .btn-signup {
+      background: transparent; color: #fff;
+      border: 1px solid #555; padding: 5px 14px; border-radius: 6px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-signup:hover { border-color: #aaa; background: rgba(255,255,255,0.08); }
+    .btn-login {
+      background: var(--red); color: #fff;
+      border: none; padding: 6px 16px; border-radius: 6px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+    .btn-login:hover { background: var(--red2); }
+    .btn-logout {
+      background: transparent; color: #ccc;
+      border: 1px solid #444; padding: 5px 14px; border-radius: 6px;
+      font-size: 0.82rem; cursor: pointer; font-family: 'Inter', sans-serif;
+    }
+    .btn-logout:hover { border-color: #888; color: #fff; }
+
+    /* ── BOTTOM FOOTER BAR ────────────────────────────────────────────────── */
+    .site-footer {
+      background: var(--dark2);
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-top: 2px solid var(--red);
+    }
+    .site-footer span {
+      color: #888; font-size: 0.72rem; letter-spacing: 0.3px;
+    }
+    .site-footer span b { color: var(--red); font-weight: 700; }
+    body { padding-bottom: 28px; }
+
+    /* ── HERO ─────────────────────────────────────────────────────────────── */
+    #page-menu { background: var(--dark2); }
+    #page-menu .page { background: #161616; }
+    #page-menu .section-title { color: #fff; }
+    #page-menu .section-sub { color: #888; }
+    .hero {
+      background: var(--dark2);
+      background-image:
+        radial-gradient(ellipse at 70% 50%, rgba(230,51,41,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(230,51,41,0.10) 0%, transparent 50%);
+      color: #fff;
+      padding: 32px 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .hero-left { max-width: 560px; }
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--red); color: #fff;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 3px;
+      margin-bottom: 0.6rem;
+    }
+    .hero h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem; font-weight: 700; line-height: 1.15;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+    .hero h1 span { color: var(--red); }
+    .hero-sub {
+      font-size: 0.9rem; color: #aaa; margin-bottom: 1rem; line-height: 1.5;
+    }
+    .hero-cta {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--red); color: #fff;
+      border: none; padding: 9px 22px; border-radius: 6px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--red2); transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent; color: #fff;
+      border: 2px solid #444; padding: 9px 18px; border-radius: 6px;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: #888; }
+
+    .hero-right {
+      font-size: 5rem; line-height: 1;
+      filter: drop-shadow(0 8px 32px rgba(230,51,41,0.4));
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    /* ── (feature strip removed) ─────────────────────────────────────────── */
+    .feature-strip {
+      background: var(--red);
+      display: flex; justify-content: center; gap: 3rem;
+      padding: 16px 2rem; flex-wrap: wrap;
+    }
+    .feature-item {
+      color: #fff; font-size: 0.85rem; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── AUTH ERROR BANNER ────────────────────────────────────────────────── */
+    #auth-error-banner { max-width: 1100px; margin: 0.75rem auto 0; padding: 0 1.5rem; }
+    .auth-error-box {
+      background: #fff8e1; border: 1px solid #f59e0b; border-left: 4px solid #f59e0b;
+      border-radius: 8px; padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; font-size: 0.88rem; color: #7c5000;
+    }
+    .auth-error-box strong { display: block; margin-bottom: 2px; color: #5c3800; }
+
+    /* ── LOGIN BANNER ─────────────────────────────────────────────────────── */
+    .login-banner {
+      background: var(--dark); color: #ccc;
+      border-radius: 10px; padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; margin-bottom: 1.75rem;
+      font-size: 0.9rem;
+    }
+    .login-banner button {
+      background: var(--red); color: #fff;
+      border: none; padding: 10px 20px; border-radius: 6px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      white-space: nowrap; font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+    .login-banner button:hover { background: var(--red2); }
+
+    /* ── AUTH0 CALLOUT ─────────────────────────────────────────────────────── */
+    .auth0-callout {
+      background: #eff6ff; border-left: 4px solid #3b82f6;
+      padding: 12px 16px; margin-bottom: 1.5rem;
+      font-size: 0.82rem; color: #1e40af; border-radius: 0 6px 6px 0;
+    }
+    .auth0-callout strong { color: #1d4ed8; }
+
+    /* ── PROGRESSIVE PROFILING MODAL ─────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-box {
+      background: #fff; border-radius: 16px; padding: 2rem;
+      width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-weight: 700; font-size: 1rem; color: #111827; margin-bottom: 0.75rem;
+    }
+
+    /* ── MARKETING INSIGHTS PANEL ─────────────────────────────────────────── */
+    .marketing-panel {
+      background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+      border: 1px solid #fbbf24; border-radius: 12px;
+      padding: 1.25rem 1.5rem; margin-bottom: 0.5rem;
+    }
+    .marketing-panel h3 { margin: 0 0 1rem; font-size: 0.95rem; color: #92400e; }
+    .mkt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .mkt-stat { text-align: center; }
+    .mkt-stat .mkt-val { font-size: 1.4rem; font-weight: 800; color: #b45309; }
+    .mkt-stat .mkt-lbl { font-size: 0.72rem; color: #92400e; margin-top: 2px; }
+    .segment-badge {
+      display: inline-block; margin-top: 1rem;
+      padding: 4px 14px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;
+    }
+    .seg-new     { background: #dbeafe; color: #1e40af; }
+    .seg-regular { background: #d1fae5; color: #065f46; }
+    .seg-loyal   { background: linear-gradient(90deg,#fbbf24,#f59e0b); color: #fff; }
+    .pref-row { margin-top: 0.75rem; font-size: 0.82rem; color: #78350f; }
+    .pref-row span { font-weight: 600; color: #92400e; }
+
+    /* ── SAVE ADDRESS CHECKBOX ROW ────────────────────────────────────────── */
+    .save-address-row {
+      display: flex; align-items: center; gap: 8px;
+      margin: 0.6rem 0 1.25rem;
+      font-size: 0.82rem; color: #6b7280;
+    }
+    .save-address-row input[type="checkbox"] {
+      width: auto; accent-color: #ef4444; cursor: pointer; flex-shrink: 0;
+    }
+    .save-address-row label { margin: 0; cursor: pointer; }
+    .save-address-row strong { color: #374151; }
+
+    /* ── STEP-UP MFA NOTICE ────────────────────────────────────────────────── */
+    .stepup-notice {
+      background: #fefce8; border: 1px solid #fbbf24; border-left: 4px solid #f59e0b;
+      border-radius: 0 6px 6px 0; padding: 11px 14px; margin-bottom: 0.75rem;
+      font-size: 0.83rem; color: #92400e; display: flex; align-items: flex-start; gap: 8px;
+    }
+    .stepup-notice.verified {
+      background: #f0fdf4; border-color: #86efac; border-left-color: #22c55e; color: #15803d;
+    }
+
+    /* ── SAVED CARD BADGE ─────────────────────────────────────────────────── */
+    .saved-card-badge {
+      background: #f0fdf4; border: 1px solid #86efac; border-left: 4px solid #22c55e;
+      border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 0.75rem;
+      font-size: 0.83rem; color: #15803d; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── PAGE WRAPPER ─────────────────────────────────────────────────────── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+    /* ── SECTION HEADINGS ─────────────────────────────────────────────────── */
+    .section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      margin-bottom: 0.35rem; letter-spacing: 0.3px;
+    }
+    .section-sub { color: var(--muted); margin-bottom: 1.75rem; font-size: 0.95rem; }
+
+    /* ── WELCOME BACK SECTION ────────────────────────────────────────────── */
+    .welcome-back-wrap {
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+      padding: 1.25rem 0 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+    .welcome-back-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    .welcome-greeting {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .welcome-greeting h3 {
+      font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 700;
+      color: var(--text);
+    }
+    .welcome-greeting .segment-badge {
+      background: var(--red); color: #fff;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 3px;
+    }
+    .past-orders-row {
+      display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 4px;
+    }
+    .past-order-card {
+      flex: 0 0 280px;
+      background: var(--cream); border: 1px solid #e8e0d4;
+      border-radius: 10px; padding: 1rem 1.1rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .poc-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .poc-id { font-weight: 700; font-size: 0.85rem; color: var(--text); }
+    .poc-date { font-size: 0.75rem; color: var(--muted); }
+    .poc-items { font-size: 0.83rem; color: #555; line-height: 1.5; }
+    .poc-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 0.25rem;
+    }
+    .poc-total { font-weight: 700; color: var(--red); font-size: 0.95rem; }
+    .btn-reorder {
+      background: var(--dark2); color: #fff;
+      border: none; padding: 5px 14px; border-radius: 6px;
+      font-size: 0.78rem; font-weight: 600; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: background 0.2s;
+    }
+    .btn-reorder:hover { background: var(--red); }
+
+    /* ── LOYALTY REWARD BANNER ───────────────────────────────────────────── */
+    .loyalty-banner {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d1a00 100%);
+      border: 1.5px solid #f59e0b;
+      border-radius: 10px; padding: 1rem 1.25rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .loyalty-banner-left { display: flex; align-items: center; gap: 0.75rem; }
+    .loyalty-icon { font-size: 2rem; }
+    .loyalty-text h4 { color: #f59e0b; font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+    .loyalty-text p  { color: #ccc; font-size: 0.8rem; }
+    .btn-claim {
+      background: #f59e0b; color: #111;
+      border: none; padding: 8px 20px; border-radius: 6px;
+      font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      font-family: 'Inter', sans-serif; white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-claim:hover { background: #d97706; }
+    .btn-claim:disabled { background: #888; cursor: default; }
+    .free-badge {
+      background: #16a34a; color: #fff;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
+      margin-left: 6px;
+    }
+
+    /* ── PIZZA GRID ───────────────────────────────────────────────────────── */
+    .pizza-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .pizza-card {
+      background: #1e1e1e; border-radius: 14px;
+      overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .pizza-card:hover { transform: translateY(-4px); box-shadow: 0 10px 32px rgba(0,0,0,0.4); }
+    .pizza-card-photo {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+    }
+    .pizza-card-body { padding: 1.1rem 1.25rem 1.25rem; }
+    .pizza-card-header-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 0.5rem; gap: 0.5rem;
+    }
+    .pizza-card-body h3 {
+      font-size: 1.1rem; font-weight: 700; color: #fff; line-height: 1.2;
+    }
+    .pizza-price { font-size: 1.1rem; font-weight: 800; color: #f5a623; white-space: nowrap; }
+    .pizza-card-body .desc {
+      font-size: 0.82rem; color: #aaa; margin-bottom: 1rem; line-height: 1.5;
+    }
+    .toppings { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .topping-label {
+      display: flex; align-items: center; gap: 6px;
+      background: #2a2a2a; border: 1px solid #3a3a3a;
+      border-radius: 20px; padding: 5px 12px;
+      font-size: 0.78rem; color: #ccc; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .topping-label:hover { border-color: #666; background: #333; }
+    .topping-label input[type="checkbox"] {
+      width: 14px; height: 14px; accent-color: var(--red); cursor: pointer;
+    }
+    .card-actions {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+    }
+    .card-qty {
+      display: flex; align-items: center; gap: 0; border: 1px solid #444; border-radius: 8px; overflow: hidden;
+    }
+    .card-qty button {
+      background: #2a2a2a; color: #fff; border: none;
+      width: 34px; height: 36px; font-size: 1.1rem; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .card-qty button:hover { background: #444; }
+    .card-qty input {
+      width: 36px; height: 36px; background: #1e1e1e; color: #fff;
+      border: none; border-left: 1px solid #444; border-right: 1px solid #444;
+      text-align: center; font-size: 0.9rem; font-weight: 600;
+    }
+    .card-qty input::-webkit-inner-spin-button { display: none; }
+    .btn-add-cart {
+      flex: 1; background: var(--red); color: #fff;
+      border: none; padding: 10px 16px; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+    .btn-add-cart:hover { background: var(--red2); }
+
+    /* ── CART ─────────────────────────────────────────────────────────────── */
+    .cart-empty {
+      text-align: center; padding: 4rem 2rem; color: var(--muted);
+    }
+    .cart-empty .ce-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .cart-empty p { font-size: 1.1rem; }
+
+    .cart-item {
+      background: var(--card); border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 0.6rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+    .ci-emoji { font-size: 2rem; width: 42px; text-align: center; flex-shrink: 0; }
+    .ci-details { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .ci-name { font-weight: 600; font-size: 0.95rem; }
+    .ci-toppings { font-size: 0.78rem; color: var(--red); }
+    .qty-ctrl { display: flex; align-items: center; gap: 0.5rem; }
+    .qty-btn {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 1.5px solid #ddd; background: #f9f9f9;
+      cursor: pointer; font-size: 1.1rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .qty-btn:hover { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .ci-price { font-weight: 700; color: var(--red); min-width: 64px; text-align: right; font-size: 0.95rem; }
+
+    .order-summary-box {
+      background: var(--card); border-radius: 12px;
+      padding: 1.5rem; margin-top: 1.25rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border: 1px solid var(--border);
+    }
+    .os-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .os-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+    .os-total { font-size: 1.3rem; font-weight: 800; }
+    .os-total span { color: var(--red); }
+    .btn-place-order {
+      width: 100%; margin-top: 1.25rem;
+      background: var(--red); color: #fff;
+      border: none; padding: 15px; border-radius: 8px;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-place-order:hover { background: var(--red2); transform: translateY(-1px); }
+    .btn-place-order:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── ALERTS ───────────────────────────────────────────────────────────── */
+    .alert { border-radius: 8px; padding: 12px 16px; margin: 1rem 0; font-size: 0.9rem; line-height: 1.5; }
+    .alert-warn    { background: #fff8e1; border: 1px solid #ffc107; color: #7c5000; }
+    .alert-success { background: #e8f5e9; border: 1px solid #4caf50; color: #1b5e20; }
+    .alert-error   { background: #ffebee; border: 1px solid #ef5350; color: #b71c1c; }
+
+    /* ── PAYMENT PAGE ─────────────────────────────────────────────────────── */
+    .payment-grid {
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.5rem; align-items: start;
+    }
+    @media (max-width: 720px) { .payment-grid { grid-template-columns: 1fr; } }
+    .pay-summary-box {
+      background: var(--card); border-radius: 12px; padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid var(--border);
+      position: sticky; top: 60px;
+    }
+    .pay-summary-item {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.88rem;
+    }
+    .pay-summary-item:last-of-type { border-bottom: none; }
+    .pay-item-detail { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+    .pay-form-box {
+      background: var(--card); border-radius: 12px; padding: 1.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid var(--border);
+    }
+    .pay-section-label {
+      font-size: 0.95rem; font-weight: 700; margin-bottom: 0.85rem; color: var(--text);
+    }
+    .pay-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 0.85rem; flex: 1; }
+    .pay-field label { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .pay-field input {
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px;
+      font-size: 0.92rem; font-family: 'Inter', sans-serif; color: var(--text);
+      background: #fafafa; transition: border-color 0.2s;
+    }
+    .pay-field input:focus { outline: none; border-color: var(--red); background: #fff; }
+    .pay-field input[readonly] { background: #f0f0f0; color: var(--muted); cursor: default; }
+    .pay-field-row { display: flex; gap: 0.75rem; }
+
+    /* ── DASHBOARD ────────────────────────────────────────────────────────── */
+    .dash-grid { display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; align-items: start; }
+    @media (max-width: 720px) { .dash-grid { grid-template-columns: 1fr; } }
+
+    .profile-box {
+      background: var(--card); border-radius: 14px; padding: 1.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid var(--border);
+      text-align: center;
+    }
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+      border: 3px solid var(--red); margin: 0 auto 1rem;
+      display: block;
+    }
+    .avatar-placeholder {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--red); color: #fff; font-size: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; margin: 0 auto 1rem; border: 3px solid var(--red2);
+    }
+    .profile-name { font-family: 'Oswald', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .profile-email { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.75rem; word-break: break-all; }
+    .badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; letter-spacing: 0.3px;
+    }
+    .badge-verified   { background: #e8f5e9; color: #2e7d32; }
+    .badge-unverified { background: #fff8e1; color: #7c5000; }
+    .profile-sub {
+      font-size: 0.72rem; color: #aaa; margin-top: 0.75rem;
+      word-break: break-all; text-align: left; line-height: 1.5;
+    }
+
+    .orders-box {
+      background: var(--card); border-radius: 14px; padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid var(--border);
+    }
+    .orders-box h2 {
+      font-family: 'Oswald', sans-serif; font-size: 1.4rem;
+      margin-bottom: 1rem; border-bottom: 2px solid var(--red); padding-bottom: 0.5rem;
+    }
+    .order-card {
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+      background: #fafafa;
+    }
+    .order-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.4rem;
+    }
+    .order-id { font-weight: 700; font-size: 0.9rem; }
+    .order-date { font-size: 0.75rem; color: var(--muted); }
+    .order-items-text { font-size: 0.85rem; color: #555; margin-bottom: 0.4rem; line-height: 1.5; }
+    .order-total-row { font-size: 0.88rem; font-weight: 700; color: var(--red); }
+
+    pre.token-claims {
+      background: #1a1a2e; color: #a3e635;
+      padding: 1rem; border-radius: 8px;
+      font-size: 0.72rem; overflow-x: auto; margin-top: 0.75rem;
+      line-height: 1.5;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ TOP HEADER ═════════════════════════════ -->
+<header>
+  <div class="header-nav">
+    <button class="nav-link" id="nav-menu"      onclick="showPage('menu')">Home</button>
+    <button class="nav-link" id="nav-dashboard" onclick="showPage('dashboard')" hidden>My Profile</button>
+    <button class="cart-pill" id="cart-btn"     onclick="showPage('cart')">
+      🛒 Cart <span class="cart-badge" id="cart-count">0</span>
+    </button>
+    <!-- ── Auth0 Feature 1: Universal Login ── -->
+    <button class="btn-signup" id="btn-signup"  onclick="client.loginWithRedirect({authorizationParams:{screen_hint:'signup'}})" hidden>Sign Up</button>
+    <button class="btn-login"  id="btn-signin"  onclick="client.loginWithRedirect({authorizationParams:{prompt:'login'}})" hidden>Sign In</button>
+    <button class="btn-logout" id="btn-signout" onclick="signOut()" hidden>Sign Out</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════ BOTTOM BAR ════════════════════════════ -->
+<div class="site-footer">
+  <span>🍕 &nbsp;<b>Pizza 42</b> &nbsp;·&nbsp; Your favourite pizza shop online, topped with Auth0 security</span>
+</div>
+
+
+<!-- Auth error banner — shown when user declines consent -->
+<div id="auth-error-banner" hidden></div>
+
+<!-- ══════════════════════════════ PAGE 1: MENU ═══════════════════════════ -->
+<div id="page-menu">
+
+  <!-- Hero — shown to all, CTA changes based on auth state -->
+  <div class="hero">
+    <div class="hero-left">
+      <span class="hero-eyebrow">Now Accepting Orders Online</span>
+        <h1>The pizza <span>everybody loves, now Online!</span></h1>
+      <div class="hero-cta">
+        <button class="btn-secondary" id="hero-signin-btn" onclick="client.loginWithRedirect()" hidden>
+          Sign In to Order
+        </button>
+      </div>
+    </div>
+    <div class="hero-right">🍕</div>
+  </div>
+
+  <!-- Welcome back section — populated for returning logged-in users -->
+  <div id="welcome-back" hidden>
+    <div class="welcome-back-wrap">
+      <div class="welcome-back-inner">
+        <div class="welcome-greeting">
+          <h3 id="welcome-greeting-text"></h3>
+          <span class="segment-badge" id="welcome-segment" hidden></span>
+        </div>
+        <div class="past-orders-row" id="past-orders-row"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu grid -->
+  <div class="page">
+    <!-- Login prompt banner — hidden once authenticated -->
+    <div id="login-banner" class="login-banner" hidden>
+      <span>Login to customize pizzas, manage a cart, and place your next order.</span>
+      <button onclick="client.loginWithRedirect({authorizationParams:{prompt:'login'}})">Login to Order</button>
+    </div>
+
+    <h2 class="section-title">Our Menu</h2>
+    <p class="section-sub">Add your favourites to the cart and head to checkout.</p>
+    <div class="pizza-grid" id="pizza-grid"></div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════ PAGE 2: CART ════════════════════════════ -->
+<div id="page-cart" class="page" hidden>
+
+  <h2 class="section-title">Your Cart</h2>
+  <p class="section-sub">Review your order before placing it.</p>
+
+  <div id="cart-items-wrap"></div>
+
+  <div id="email-warn" class="alert alert-warn" hidden>
+    ⚠️ <strong>Please verify your email address before placing an order.</strong>
+    Check your inbox for the verification link sent by Auth0.
+  </div>
+
+  <div id="order-feedback"></div>
+
+  <div id="order-summary-box" class="order-summary-box" hidden>
+    <div class="os-row"><span>Subtotal</span><span id="subtotal-val">$0.00</span></div>
+    <div class="os-row"><span>Delivery</span><span>Free</span></div>
+    <hr class="os-divider"/>
+    <div class="os-row os-total"><span>Total</span><span>$<span id="cart-total">0.00</span></span></div>
+    <button class="btn-place-order" id="place-order-btn" onclick="placeOrder()">
+      🍕 Proceed to Checkout
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ PAGE 3: PAYMENT ═══════════════════════════ -->
+<div id="page-payment" class="page" hidden>
+
+
+  <div class="payment-grid">
+
+    <!-- Left: Order summary -->
+    <div class="pay-summary-box">
+      <h2 class="section-title" style="font-size:1.3rem; margin-bottom:1rem;">Order Summary</h2>
+      <div id="pay-items"></div>
+      <hr class="os-divider"/>
+      <div class="os-row os-total" style="font-size:1.1rem;">
+        <span>Total</span><span style="color:var(--red);">$<span id="pay-total">0.00</span></span>
+      </div>
+    </div>
+
+    <!-- Right: Address + Payment form -->
+    <div class="pay-form-box">
+
+      <!-- Delivery address -->
+      <h3 class="pay-section-label">📍 Delivery Address</h3>
+      <div class="pay-field-row">
+        <div class="pay-field">
+          <label>Full Name</label>
+          <input type="text" id="pay-name" placeholder="Jane Smith"/>
+        </div>
+        <div class="pay-field">
+          <label>Email</label>
+          <input type="email" id="pay-email" placeholder="jane@email.com" readonly/>
+        </div>
+      </div>
+      <div class="pay-field">
+        <label>Street Address</label>
+        <input type="text" id="pay-street" placeholder="123 Pizza Lane"/>
+      </div>
+      <div class="pay-field-row">
+        <div class="pay-field">
+          <label>City</label>
+          <input type="text" id="pay-city" placeholder="New York"/>
+        </div>
+        <div class="pay-field" style="max-width:120px;">
+          <label>Zip Code</label>
+          <input type="text" id="pay-zip" placeholder="10001" maxlength="10"/>
+        </div>
+      </div>
+
+      <!-- Save address checkbox -->
+      <div class="save-address-row">
+        <input type="checkbox" id="pay-save-address" checked/>
+        <label for="pay-save-address">
+          💾 Save this address to my <strong>Auth0 profile</strong> for one-click reorder next time
+        </label>
+      </div>
+
+      <!-- Payment details -->
+      <h3 class="pay-section-label" style="margin-top:1.5rem;">💳 Payment Details</h3>
+      <div class="auth0-callout" style="margin-bottom:1rem; font-size:0.78rem;">
+        🔒 This is a <strong>mock payment form</strong> for demo purposes. No real card data is processed.
+        In production, integrate Stripe or Adyen — Auth0 tokens secure the backend API call.<br/>
+        <span style="margin-top:4px;display:block;">🛡️ Orders over <strong>$30</strong> trigger <strong>Auth0 Step-Up MFA</strong> — an extra identity check before high-value payments.</span>
+      </div>
+      <div id="pay-stepup-notice"></div>
+      <div id="pay-saved-card-notice"></div>
+      <div class="pay-field">
+        <label>Card Number</label>
+        <input type="text" id="pay-card" placeholder="4242 4242 4242 4242" maxlength="19"
+               autocomplete="off" oninput="formatCard(this)"/>
+      </div>
+      <div class="pay-field-row">
+        <div class="pay-field">
+          <label>Expiry</label>
+          <input type="text" id="pay-expiry" placeholder="MM / YY" maxlength="7"
+                 autocomplete="off" oninput="formatExpiry(this)"/>
+        </div>
+        <div class="pay-field" style="max-width:120px;">
+          <label>CVV</label>
+          <input type="text" id="pay-cvv" placeholder="•••" maxlength="4"
+                 autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'')"/>
+        </div>
+      </div>
+
+      <div id="pay-feedback"></div>
+
+      <div style="display:flex; gap:1rem; margin-top:1.25rem;">
+        <button class="btn-secondary" style="flex:0 0 auto; color:#374151; border-color:#d1d5db;"
+                onclick="showPage('cart')">← Back to Cart</button>
+        <button class="btn-place-order" style="flex:1;" id="pay-submit-btn"
+                onclick="submitOrder()">
+          🔒 Confirm &amp; Pay
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════ PAGE 3: DASHBOARD ════════════════════════ -->
+<div id="page-dashboard" class="page" hidden>
+
+  <h2 class="section-title">My Profile</h2>
+  <p class="section-sub">Your account details and order history.</p>
+
+  <div class="dash-grid">
+    <!-- Left: Profile card -->
+    <div class="profile-box" id="profile-card"></div>
+
+    <!-- Right: Orders + Marketing Insights -->
+    <div class="orders-box">
+      <!-- Marketing Insights panel -->
+      <div id="marketing-insights"></div>
+
+      <h2 style="margin-top:1.5rem;">Order History</h2>
+      <div id="order-history"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ PROGRESSIVE PROFILING MODAL ══════════════════ -->
+<div id="profiling-modal" class="modal-backdrop" hidden>
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>👋 Help us personalise your experience</span>
+      <button onclick="closeProfilingModal()" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:#6b7280;">✕</button>
+    </div>
+    <div class="pay-field">
+      <label>🍕 Favourite Pizza Style</label>
+      <select id="prof-fav-pizza" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.9rem;">
+        <option value="">Select one…</option>
+        <option value="classic">Classic (Margherita, Pepperoni)</option>
+        <option value="gourmet">Gourmet (Four Cheese, Indian)</option>
+        <option value="bbq">BBQ &amp; Smoky</option>
+        <option value="veggie">Veggie</option>
+      </select>
+    </div>
+    <div class="pay-field" style="margin-top:0.75rem;">
+      <label>🎂 Birthday (for surprise offers!)</label>
+      <input type="date" id="prof-birthday" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.9rem;"/>
+    </div>
+    <div class="save-address-row" style="margin-top:0.75rem;">
+      <input type="checkbox" id="prof-marketing" checked/>
+      <label for="prof-marketing">📧 Send me personalised offers and promotions</label>
+    </div>
+    <div id="prof-feedback"></div>
+    <button class="btn-place-order" style="width:100%;margin-top:1rem;" onclick="saveProfilingData()">
+      💾 Save My Preferences
+    </button>
+  </div>
+</div>
+
+
+
+
+<!-- ── Auth0 SPA SDK v2 ────────────────────────────────────────────────── -->
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.18/auth0-spa-js.production.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// Auth0 config
+// ═══════════════════════════════════════════════════════════════════════
+const AUTH0_DOMAIN    = 'dipti-test.us.auth0.com';
+const AUTH0_CLIENT_ID = 'HXLH9MPOOJ34kt8WzmCqnqLYwRnfstfm';
+const AUTH0_AUDIENCE  = 'https://pizza42';
+
+// ═══════════════════════════════════════════════════════════════════════
+// Menu data
+// ═══════════════════════════════════════════════════════════════════════
+const MENU = [
+  { id:1, name:'Margherita',    price:12.99, desc:'Fresh mozzarella, tomato sauce, basil, and olive oil.', img:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&auto=format&q=80' },
+  { id:2, name:'Pepperoni',     price:14.99, desc:'Crispy pepperoni, melted cheese, and garlic-seasoned crust.', img:'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&auto=format&q=80' },
+  { id:3, name:'BBQ Chicken',   price:15.99, desc:'Smoky BBQ sauce, grilled chicken, and caramelised onions.', img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&q=80' },
+  { id:4, name:'Veggie Supreme',price:13.99, desc:'Bell peppers, onions, mushrooms, and black olives.', img:'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&auto=format&q=80' },
+  { id:5, name:'Four Cheese',   price:16.99, desc:'Mozzarella, gouda, parmesan, and creamy ricotta.', img:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&q=80' },
+  { id:6, name:'Spicy Indian',  price:15.49, desc:'Salami piccante, nduja, and chilli oil drizzle.', img:'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&auto=format&q=80' },
+  // Loyalty reward — not shown in the menu grid, only claimable via the loyalty banner
+  { id:99, name:'Garlic Bread', price:0, loyalty:true, desc:'Crispy garlic bread — your loyalty reward.', img:'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=600&auto=format&q=80' },
+];
+
+const TOPPINGS = ['Extra Cheese', 'Mushrooms', 'Jalapeños', 'Black Olives', 'Onions', 'Bacon'];
+
+// ═══════════════════════════════════════════════════════════════════════
+// State
+// ═══════════════════════════════════════════════════════════════════════
+// Load cart — reset if old format (values were plain numbers)
+const _savedCart = JSON.parse(sessionStorage.getItem('pizza42_cart') || '{}');
+const _isOldFormat = Object.values(_savedCart).some(v => typeof v === 'number');
+let cart = _isOldFormat ? {} : _savedCart;
+let currentUser    = null;
+let idTokenClaims  = null;
+let mfaVerified    = false; // set to true after successful Step-Up MFA redirect
+
+// ═══════════════════════════════════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════════════════════════════════
+const $    = id => document.getElementById(id);
+const show = id => $(id).hidden = false;
+const hide = id => $(id).hidden = true;
+const html = (id, h) => $(id).innerHTML = h;
+
+// ═══════════════════════════════════════════════════════════════════════
+// Navigation
+// ═══════════════════════════════════════════════════════════════════════
+function showPage(name, pushHistory = true) {
+  ['menu','cart','payment','dashboard'].forEach(p => $(`page-${p}`).hidden = p !== name);
+  ['nav-menu','cart-btn','nav-dashboard'].forEach(b => $(b)?.classList.remove('active'));
+  if (name === 'menu')      { $('nav-menu').classList.add('active'); renderWelcomeBack().catch(console.error); }
+  if (name === 'cart')      { $('cart-btn').classList.add('active'); }
+  if (name === 'dashboard') { $('nav-dashboard').classList.add('active'); renderDashboard().catch(console.error); }
+  if (name === 'payment')   { renderPaymentPage(); }
+  if (pushHistory) location.hash = name === 'menu' ? '' : name;
+}
+
+// Handle browser back/forward
+window.addEventListener('hashchange', () => {
+  const page = location.hash.replace('#', '') || 'menu';
+  if (['menu','cart','payment','dashboard'].includes(page)) showPage(page, false);
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// Menu
+// ═══════════════════════════════════════════════════════════════════════
+function renderMenu() {
+  html('pizza-grid', MENU.filter(p => !p.loyalty).map(p => `
+    <div class="pizza-card">
+      <img class="pizza-card-photo" src="${p.img}" alt="${p.name}" loading="lazy"/>
+      <div class="pizza-card-body">
+        <div class="pizza-card-header-row">
+          <h3>${p.name}</h3>
+          <span class="pizza-price">$${p.price.toFixed(2)}</span>
+        </div>
+        <p class="desc">${p.desc}</p>
+        <div class="toppings">
+          ${TOPPINGS.map(t => `
+            <label class="topping-label">
+              <input type="checkbox" class="topping-cb" value="${t}"/> ${t}
+            </label>`).join('')}
+        </div>
+        <div class="card-actions">
+          <div class="card-qty">
+            <button onclick="adjustQty(${p.id},-1)">−</button>
+            <input type="number" id="qty-${p.id}" value="1" min="1" max="10"/>
+            <button onclick="adjustQty(${p.id},+1)">+</button>
+          </div>
+          <button class="btn-add-cart" onclick="addToCart(${p.id})">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  `).join(''));
+}
+
+function adjustQty(id, delta) {
+  const input = $(`qty-${id}`);
+  input.value = Math.min(10, Math.max(1, +input.value + delta));
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Welcome Back — greet returning users and show past orders
+// ═══════════════════════════════════════════════════════════════════════
+async function renderWelcomeBack() {
+  if (!currentUser) { hide('welcome-back'); return; }
+
+  const loginCount = idTokenClaims?.['https://pizza42.com/login_count'] || 1;
+  const segment    = idTokenClaims?.['https://pizza42.com/segment']     || '';
+  const firstName  = (currentUser.given_name || currentUser.name || currentUser.email || '').split(' ')[0];
+
+  // Greeting text
+  const greeting = loginCount <= 1
+    ? `Welcome, ${firstName}! 🍕`
+    : `Welcome back, ${firstName}! 👋`;
+  html('welcome-greeting-text', greeting);
+
+  // Segment badge (only for returning users)
+  if (segment && loginCount > 1) {
+    html('welcome-segment', segment);
+    show('welcome-segment');
+  } else {
+    hide('welcome-segment');
+  }
+
+  // Fetch past orders from backend
+  try {
+    const token = await client.getTokenSilently({
+      authorizationParams: { audience: AUTH0_AUDIENCE, scope: 'place:order' }
+    });
+    const res = await fetch('/api/orders', { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error('fetch failed');
+    const orders = await res.json();
+
+    // Loyalty check — orders since last redemption must be >= 3
+    // baseCount is saved to user_metadata when reward is claimed, so the counter resets
+    const freshMeta    = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
+    const baseCount    = freshMeta.garlic_bread_base_count || 0;
+    const claimReward  = idTokenClaims?.['https://pizza42.com/free_garlic_bread'] === true;
+    const earnedReward = claimReward || (orders.length - baseCount) >= 3;
+    const alreadyInCart = !!cart[99];
+
+    if (earnedReward) {
+      const loyaltyHtml = `
+        <div class="loyalty-banner">
+          <div class="loyalty-banner-left">
+            <div class="loyalty-icon">🎁</div>
+            <div class="loyalty-text">
+              <h4>Loyalty Reward — Free Garlic Bread!</h4>
+              <p>Auth0 tracks your order history and automatically unlocks this reward after 3 orders. Your identity, your perks.</p>
+            </div>
+          </div>
+          <button class="btn-claim" id="btn-claim-gb" onclick="claimGarlicBread()"
+            ${alreadyInCart ? 'disabled' : ''}>
+            ${alreadyInCart ? '✓ Added to Cart' : '🧄 Claim Free Garlic Bread'}
+          </button>
+        </div>`;
+
+      if (!orders || orders.length === 0) {
+        html('past-orders-row', loyaltyHtml + `<p style="color:#888;font-size:0.88rem;margin-top:0.5rem;">No past orders yet — pick something from the menu below.</p>`);
+      } else {
+        const recent = [...orders].reverse().slice(0, 3);
+        const cardsHtml = recent.map(o => {
+          const itemsText = (o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ');
+          const date = new Date(o.placedAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+          const itemsJson = encodeURIComponent(JSON.stringify(o.items || []));
+          return `
+            <div class="past-order-card">
+              <div class="poc-header">
+                <span class="poc-id">Order #${o.id}</span>
+                <span class="poc-date">${date}</span>
+              </div>
+              <div class="poc-items">${itemsText}</div>
+              <div class="poc-footer">
+                <span class="poc-total">$${Number(o.total).toFixed(2)}</span>
+                <button class="btn-reorder" onclick="reorder(decodeAndReorder('${itemsJson}'))">🔄 Reorder</button>
+              </div>
+            </div>`;
+        }).join('');
+        html('past-orders-row', loyaltyHtml + cardsHtml);
+      }
+    } else if (!orders || orders.length === 0) {
+      html('past-orders-row', loginCount <= 1
+        ? `<p style="color:#888;font-size:0.88rem;">Browse the menu below and place your first order!</p>`
+        : `<p style="color:#888;font-size:0.88rem;margin-bottom:0.25rem;">No past orders yet — pick something from the menu below.</p>
+           <p style="color:#aaa;font-size:0.78rem;">💡 Place 3 orders to unlock a free Garlic Bread loyalty reward.</p>`);
+    } else {
+      const recent = [...orders].reverse().slice(0, 3);
+      const ordersSinceRedemption = orders.length - baseCount;
+      const remaining = 3 - ordersSinceRedemption;
+      const progressHtml = remaining > 0
+        ? `<p style="color:#aaa;font-size:0.78rem;margin-bottom:0.75rem;">💡 ${remaining} more order${remaining>1?'s':''} to unlock free Garlic Bread 🧄</p>`
+        : '';
+      html('past-orders-row', progressHtml + recent.map(o => {
+        const itemsText = (o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ');
+        const date = new Date(o.placedAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        const itemsJson = encodeURIComponent(JSON.stringify(o.items || []));
+        return `
+          <div class="past-order-card">
+            <div class="poc-header">
+              <span class="poc-id">Order #${o.id}</span>
+              <span class="poc-date">${date}</span>
+            </div>
+            <div class="poc-items">${itemsText}</div>
+            <div class="poc-footer">
+              <span class="poc-total">$${Number(o.total).toFixed(2)}</span>
+              <button class="btn-reorder" onclick="reorder(decodeAndReorder('${itemsJson}'))">🔄 Reorder</button>
+            </div>
+          </div>`;
+      }).join(''));
+    }
+    show('welcome-back');
+  } catch (e) {
+    // Silently hide if orders can't be fetched
+    hide('welcome-back');
+  }
+}
+
+function decodeAndReorder(encoded) {
+  try { return JSON.parse(decodeURIComponent(encoded)); } catch { return []; }
+}
+
+function reorder(items) {
+  if (!items || !items.length) return;
+  items.forEach(item => {
+    const menuItem = MENU.find(m => m.id === item.id);
+    if (!menuItem) return;
+    if (cart[item.id]) {
+      cart[item.id].qty += (item.qty || 1);
+    } else {
+      cart[item.id] = { qty: item.qty || 1, toppings: item.toppings || [] };
+    }
+  });
+  renderCart();
+  showPage('cart');
+}
+
+async function claimGarlicBread() {
+  cart[99] = { qty: 1, toppings: [], free: true };
+  renderCart();
+  const btn = $('btn-claim-gb');
+  if (btn) { btn.disabled = true; btn.textContent = '✓ Added to Cart'; }
+
+  // Save redemption point to Auth0 — next reward requires 3 NEW orders from here
+  try {
+    const token = await client.getTokenSilently({
+      authorizationParams: { audience: AUTH0_AUDIENCE, scope: 'place:order' }
+    });
+    const currentOrderCount = (await (await fetch('/api/orders', {
+      headers: { Authorization: `Bearer ${token}` }
+    })).json()).length;
+
+    await fetch('/api/user/metadata', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ garlic_bread_base_count: currentOrderCount })
+    });
+    // Update local cache so banner hides immediately
+    if (!idTokenClaims['https://pizza42.com/user_metadata']) {
+      idTokenClaims['https://pizza42.com/user_metadata'] = {};
+    }
+    idTokenClaims['https://pizza42.com/user_metadata'].garlic_bread_base_count = currentOrderCount;
+    idTokenClaims['https://pizza42.com/free_garlic_bread'] = false;
+  } catch (e) { console.warn('Could not save garlic bread redemption:', e); }
+
+  showPage('cart');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Cart
+// ═══════════════════════════════════════════════════════════════════════
+function addToCart(id) {
+  const qtyInput = $(`qty-${id}`);
+  const qty = Math.max(1, parseInt(qtyInput?.value) || 1);
+  const card = qtyInput?.closest('.pizza-card');
+  const toppings = [...(card?.querySelectorAll('.topping-cb:checked') || [])].map(cb => cb.value);
+
+  if (cart[id]) {
+    cart[id].qty += qty;
+    toppings.forEach(t => { if (!cart[id].toppings.includes(t)) cart[id].toppings.push(t); });
+  } else {
+    cart[id] = { qty, toppings };
+  }
+
+  if (qtyInput) qtyInput.value = 1;
+  card?.querySelectorAll('.topping-cb:checked').forEach(cb => cb.checked = false);
+  renderCart();
+  const btn = card?.querySelector('.btn-add-cart');
+  if (btn) { btn.textContent = '✓ Added!'; setTimeout(() => btn.textContent = 'Add to Cart', 1200); }
+}
+
+function changeQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id].qty = (cart[id].qty || 0) + delta;
+  if (cart[id].qty <= 0) delete cart[id];
+  renderCart();
+}
+
+function getQty(id)      { return cart[id]?.qty      || 0; }
+function getToppings(id) { return cart[id]?.toppings || []; }
+
+function renderCart() {
+  sessionStorage.setItem('pizza42_cart', JSON.stringify(cart));
+  const ids = Object.keys(cart).map(Number);
+  const total = ids.reduce((s, id) => s + MENU.find(m=>m.id===id).price * getQty(id), 0);
+  $('cart-count').textContent = ids.reduce((s, id) => s + getQty(id), 0);
+
+  if (ids.length === 0) {
+    html('cart-items-wrap', `
+      <div class="cart-empty">
+        <div class="ce-icon">🛒</div>
+        <p>Your cart is empty — go pick some pizzas!</p>
+      </div>`);
+    hide('order-summary-box');
+    return;
+  }
+
+  html('cart-items-wrap', ids.map(id => {
+    const p = MENU.find(m => m.id === id);
+    const qty = getQty(id);
+    const toppings = getToppings(id);
+    const isFree = p.loyalty || cart[id]?.free;
+    const sub = isFree ? '0.00' : (p.price * qty).toFixed(2);
+    const imgHtml = isFree
+      ? `<div style="width:52px;height:52px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;">🧄</div>`
+      : `<img src="${p.img}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;" alt="${p.name}"/>`;
+    return `
+      <div class="cart-item">
+        ${imgHtml}
+        <div class="ci-details">
+          <span class="ci-name">${p.name}${isFree ? '<span class="free-badge">FREE</span>' : ''}</span>
+          ${toppings.length > 0
+            ? `<span class="ci-toppings">+ ${toppings.join(' · ')}</span>`
+            : isFree ? '<span class="ci-toppings" style="color:#16a34a">🎁 Loyalty reward</span>'
+                     : '<span class="ci-toppings" style="color:#bbb">No extra toppings</span>'}
+        </div>
+        <div class="qty-ctrl">
+          ${isFree
+            ? `<button class="qty-btn" onclick="changeQty(${id},-1)" style="opacity:0.4" title="Remove">×</button>
+               <span style="font-weight:600; min-width:20px; text-align:center">${qty}</span>
+               <span style="width:28px"></span>`
+            : `<button class="qty-btn" onclick="changeQty(${id},-1)">−</button>
+               <span style="font-weight:600; min-width:20px; text-align:center">${qty}</span>
+               <button class="qty-btn" onclick="changeQty(${id},+1)">+</button>`}
+        </div>
+        <span class="ci-price" style="${isFree ? 'color:#16a34a;' : ''}">$${sub}</span>
+      </div>`;
+  }).join(''));
+
+  $('cart-total').textContent   = total.toFixed(2);
+  $('subtotal-val').textContent = '$' + total.toFixed(2);
+  show('order-summary-box');
+}
+
+// ── Progressive Profiling ─────────────────────────────────────────────
+function openProfilingModal() {
+  const meta = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
+  if (meta.fav_pizza) $('prof-fav-pizza').value = meta.fav_pizza;
+  if (meta.birthday)  $('prof-birthday').value  = meta.birthday;
+  if (meta.marketing_consent !== undefined)
+    $('prof-marketing').checked = meta.marketing_consent;
+  html('prof-feedback', '');
+  $('profiling-modal').hidden = false;
+}
+
+function closeProfilingModal() {
+  $('profiling-modal').hidden = true;
+}
+
+async function saveProfilingData() {
+  const favPizza = $('prof-fav-pizza').value;
+  const birthday = $('prof-birthday').value;
+  const marketing = $('prof-marketing').checked;
+
+  if (!favPizza) {
+    html('prof-feedback', '<div class="alert alert-error" style="margin-top:0.5rem;">❌ Please select your favourite pizza style.</div>');
+    return;
+  }
+
+  try {
+    const token = await client.getTokenSilently({
+      authorizationParams: { audience: AUTH0_AUDIENCE, scope: 'place:order' }
+    });
+    const res = await fetch('/api/user/metadata', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        address:           idTokenClaims?.['https://pizza42.com/user_metadata']?.saved_address || {},
+        cardLast4:         idTokenClaims?.['https://pizza42.com/user_metadata']?.saved_card_last4 || '',
+        fav_pizza:         favPizza,
+        birthday:          birthday,
+        marketing_consent: marketing
+      })
+    });
+    if (!res.ok) throw new Error('Save failed');
+    html('prof-feedback', '<div class="alert alert-success" style="margin-top:0.5rem;">✅ Preferences saved to your Auth0 profile!</div>');
+    // Update local ID token cache so renderDashboard shows preferences immediately
+    if (!idTokenClaims['https://pizza42.com/user_metadata']) {
+      idTokenClaims['https://pizza42.com/user_metadata'] = {};
+    }
+    idTokenClaims['https://pizza42.com/user_metadata'].fav_pizza         = favPizza;
+    idTokenClaims['https://pizza42.com/user_metadata'].birthday          = birthday;
+    idTokenClaims['https://pizza42.com/user_metadata'].marketing_consent = marketing;
+    setTimeout(() => { closeProfilingModal(); renderDashboard(); }, 1500);
+  } catch(e) {
+    html('prof-feedback', '<div class="alert alert-error" style="margin-top:0.5rem;">❌ Could not save. Try again.</div>');
+  }
+}
+
+// ── Sign Out — clear cart before logging out ─────────────────────────
+function signOut() {
+  cart = {};
+  mfaVerified = false;
+  sessionStorage.removeItem('pizza42_cart');
+  sessionStorage.removeItem('pizza42_cart_user');
+  sessionStorage.removeItem('pizza42_pending_payment');
+  renderCart();
+  client.logout({ logoutParams: { returnTo: location.origin } });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Feature 2: Proceed to Checkout (email check → payment page)
+// ═══════════════════════════════════════════════════════════════════════
+async function placeOrder() {
+  if (!currentUser) {
+    // After login, return directly to the payment page
+    await client.loginWithRedirect({ appState: { targetUrl: 'payment' } });
+    return;
+  }
+
+  // ── Feature 2: Email Verification Guard ──────────────────────────
+  if (!currentUser.email_verified) {
+    show('email-warn');
+    html('order-feedback', '');
+    return;
+  }
+  hide('email-warn');
+  html('order-feedback', '');
+  showPage('payment');
+}
+
+// ── MFA check: was MFA used in the current Auth0 session? ────────────
+function hasMfa() {
+  // Primary: flag set after our own Step-Up MFA redirect completes
+  if (mfaVerified) return true;
+  // Fallback: check amr claim if Auth0 includes it
+  const amr = idTokenClaims?.amr || [];
+  return Array.isArray(amr) ? amr.includes('mfa') : amr === 'mfa';
+}
+
+const STEPUP_THRESHOLD = 30; // orders over $30 require Step-Up MFA
+
+// ── Render payment page with pre-filled Auth0 profile data ───────────
+function renderPaymentPage() {
+  const ids = Object.keys(cart).map(Number);
+  const total = ids.reduce((s, id) => s + MENU.find(m=>m.id===id).price * getQty(id), 0);
+
+  // Order summary on left
+  html('pay-items', ids.map(id => {
+    const p = MENU.find(m => m.id === id);
+    const toppings = getToppings(id);
+    return `
+      <div class="pay-summary-item">
+        <div>
+          <div>${p.name} ×${getQty(id)}</div>
+          ${toppings.length ? `<div class="pay-item-detail">+ ${toppings.join(', ')}</div>` : ''}
+        </div>
+        <strong>$${(p.price * getQty(id)).toFixed(2)}</strong>
+      </div>`;
+  }).join(''));
+  $('pay-total').textContent = total.toFixed(2);
+
+  // Pre-fill name & email from Auth0 ID token
+  if (currentUser) {
+    $('pay-name').value  = currentUser.name  || '';
+    $('pay-email').value = currentUser.email || '';
+  }
+
+  // Pre-fill address + card from saved user_metadata (Auth0 feature)
+  html('pay-saved-card-notice', '');
+  const meta = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
+  if (meta.saved_address) {
+    if (meta.saved_address.street) $('pay-street').value = meta.saved_address.street;
+    if (meta.saved_address.city)   $('pay-city').value   = meta.saved_address.city;
+    if (meta.saved_address.zip)    $('pay-zip').value    = meta.saved_address.zip;
+  }
+  if (meta.saved_card_last4) {
+    $('pay-card').value   = `4242 4242 4242 ${meta.saved_card_last4}`;
+    $('pay-expiry').value = '12/99';
+    $('pay-cvv').value    = '999';
+    html('pay-saved-card-notice',
+      `<div class="saved-card-badge">💳 Using saved card on file — ending in ${meta.saved_card_last4}</div>`);
+  }
+
+  // Restore form state saved before MFA redirect (overrides user_metadata pre-fill)
+  const _pending = JSON.parse(sessionStorage.getItem('pizza42_pending_payment') || 'null');
+  if (_pending) {
+    if (_pending.name)   $('pay-name').value   = _pending.name;
+    if (_pending.street) $('pay-street').value = _pending.street;
+    if (_pending.city)   $('pay-city').value   = _pending.city;
+    if (_pending.zip)    $('pay-zip').value    = _pending.zip;
+    if (_pending.card)   $('pay-card').value   = _pending.card;
+    if (_pending.expiry) $('pay-expiry').value = _pending.expiry;
+    if (_pending.cvv)    $('pay-cvv').value    = _pending.cvv;
+    sessionStorage.removeItem('pizza42_pending_payment');
+  }
+
+  // Step-Up MFA notice — warn if total exceeds threshold and MFA not yet done
+  if (total >= STEPUP_THRESHOLD && !hasMfa()) {
+    html('pay-stepup-notice',
+      `<div class="stepup-notice">
+        🛡️ <div><strong>Step-Up MFA required</strong> — this order is $${total.toFixed(2)}.
+        Orders over $${STEPUP_THRESHOLD} require an extra identity check via Auth0 MFA before payment is processed.</div>
+      </div>`);
+  } else if (total >= STEPUP_THRESHOLD && hasMfa()) {
+    html('pay-stepup-notice',
+      `<div class="stepup-notice verified">
+        ✅ <strong>MFA verified</strong> — you're cleared for high-value checkout.
+      </div>`);
+  } else {
+    html('pay-stepup-notice', '');
+  }
+
+  html('pay-feedback', '');
+  const btn = $('pay-submit-btn');
+  if (btn) { btn.disabled = false; btn.innerHTML = '🔒 Confirm &amp; Pay'; }
+}
+
+// Card number formatter
+function formatCard(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.match(/.{1,4}/g)?.join(' ') || v;
+}
+function formatExpiry(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,4);
+  if (v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
+  el.value = v;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Feature 3: Submit Order — calls API with place:order scoped token
+// ═══════════════════════════════════════════════════════════════════════
+async function submitOrder() {
+  // Basic validation
+  const name   = $('pay-name').value.trim();
+  const street = $('pay-street').value.trim();
+  const city   = $('pay-city').value.trim();
+  const card   = $('pay-card').value.replace(/\s/g,'');
+  const expiry = $('pay-expiry').value.trim();
+  const cvv    = $('pay-cvv').value.trim();
+
+  if (!name || !street || !city) {
+    html('pay-feedback', '<div class="alert alert-error">❌ Please fill in your delivery address.</div>');
+    return;
+  }
+  if (card.length < 16 || expiry.length < 5 || cvv.length < 3) {
+    html('pay-feedback', '<div class="alert alert-error">❌ Please enter valid payment details.</div>');
+    return;
+  }
+
+  // ── Feature 4: Step-Up MFA for high-value orders ──────────────────
+  const preTotal = Object.keys(cart).map(Number)
+    .reduce((s, id) => s + MENU.find(m => m.id === id).price * getQty(id), 0);
+
+  if (preTotal >= STEPUP_THRESHOLD && !hasMfa()) {
+    // Save the form so it can be restored after the MFA redirect
+    sessionStorage.setItem('pizza42_pending_payment', JSON.stringify({
+      name:   $('pay-name').value,
+      street: $('pay-street').value,
+      city:   $('pay-city').value,
+      zip:    $('pay-zip').value,
+      card:   $('pay-card').value,
+      expiry: $('pay-expiry').value,
+      cvv:    $('pay-cvv').value
+    }));
+    html('pay-feedback',
+      `<div class="alert alert-error">🛡️ This order requires MFA verification. Redirecting to Auth0…</div>`);
+    setTimeout(async () => {
+      await client.loginWithRedirect({
+        appState: { targetUrl: 'payment', stepUpDone: true },
+        authorizationParams: {
+          acr_values: 'http://schemas.openid.net/pep/claims/acr/values/mfa'
+        }
+      });
+    }, 1200);
+    return;
+  }
+
+  const btn = $('pay-submit-btn');
+  btn.disabled = true; btn.textContent = '⏳ Processing…';
+  html('pay-feedback', '');
+
+  try {
+    // ── Feature 3: Access token with place:order scope ─────────────
+    const token = await client.getTokenSilently({
+      authorizationParams: { audience: AUTH0_AUDIENCE, scope: 'place:order' }
+    });
+
+    const items = Object.keys(cart).map(Number).map(id => {
+      const p = MENU.find(m => m.id === id);
+      return { id: p.id, name: p.name, qty: getQty(id), toppings: getToppings(id), price: p.price };
+    });
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+    const delivery = { name, street, city, zip: $('pay-zip').value.trim() };
+
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items, total, delivery })
+    });
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
+
+    const order = await res.json();
+
+    // Save address + card to Auth0 user_metadata (only if checkbox ticked)
+    const saveAddress = $('pay-save-address')?.checked !== false;
+    if (saveAddress) {
+      const zip = $('pay-zip').value.trim();
+      const last4 = card.slice(-4);
+      try {
+        await fetch('/api/user/metadata', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address: { street, city, zip }, cardLast4: last4 })
+        });
+        // Update local cache so the next payment page visit pre-fills immediately
+        if (!idTokenClaims['https://pizza42.com/user_metadata']) {
+          idTokenClaims['https://pizza42.com/user_metadata'] = {};
+        }
+        idTokenClaims['https://pizza42.com/user_metadata'].saved_address    = { street, city, zip };
+        idTokenClaims['https://pizza42.com/user_metadata'].saved_card_last4 = last4;
+      } catch (e) { console.warn('Could not save user metadata:', e); }
+    }
+
+    cart = {};
+    sessionStorage.removeItem('pizza42_cart');
+    renderCart();
+
+    // Show success and redirect to dashboard
+    html('pay-feedback', `
+      <div class="alert alert-success">
+        ✅ <strong>Order #${order.id} confirmed!</strong> Total: $${Number(order.total).toFixed(2)}<br>
+        <small>Delivering to ${delivery.street}, ${delivery.city}. Check <strong>My Profile</strong> for order history.</small>
+      </div>`);
+    setTimeout(() => showPage('dashboard'), 2500);
+
+  } catch (err) {
+    html('pay-feedback', `<div class="alert alert-error">❌ ${err.message}</div>`);
+    btn.disabled = false; btn.innerHTML = '🔒 Confirm &amp; Pay';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Dashboard
+// ═══════════════════════════════════════════════════════════════════════
+async function renderDashboard() {
+  if (!currentUser) return;
+
+  const verBadge = currentUser.email_verified
+    ? '<span class="badge badge-verified">✓ Verified</span>'
+    : '<span class="badge badge-unverified">⚠ Not Verified</span>';
+
+  const avatar = currentUser.picture
+    ? `<img src="${currentUser.picture}" class="profile-avatar" alt="avatar"/>`
+    : `<div class="avatar-placeholder">${(currentUser.name||currentUser.email)[0].toUpperCase()}</div>`;
+
+  html('profile-card', `
+    ${avatar}
+    <div class="profile-name">${currentUser.name || 'Pizza Fan'}</div>
+    <div class="profile-email">${currentUser.email}</div>
+    ${verBadge}
+  `);
+
+  // ── Marketing Insights from Auth0 app_metadata claims ────────────
+  const loginCount = idTokenClaims?.['https://pizza42.com/login_count'] || 1;
+  const firstLogin  = idTokenClaims?.['https://pizza42.com/first_login'];
+  const segment     = idTokenClaims?.['https://pizza42.com/segment'] || 'new';
+  const meta        = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
+
+  const prefLine = meta.fav_pizza
+    ? `<div class="pref-row">🍕 Favourite: <span>${meta.fav_pizza}</span>${meta.birthday ? `&nbsp;·&nbsp; 🎂 Birthday: <span>${meta.birthday}</span>` : ''}&nbsp;<a href="#" onclick="openProfilingModal();return false;" style="font-size:0.78rem;color:#b45309;margin-left:0.5rem;">✏️ Update</a></div>`
+    : `<div class="pref-row" style="opacity:0.7">No preferences saved yet — <a href="#" onclick="openProfilingModal();return false;" style="color:#b45309;">add them now</a></div>`;
+
+  html('marketing-insights', prefLine);
+
+  // Progressive profiling: prompt on 2nd login if no preferences saved yet
+  if (loginCount === 2 && !meta.fav_pizza) {
+    setTimeout(() => openProfilingModal(), 800);
+  }
+
+  // ── Fetch live orders from API ────────────────────────────────────
+  html('order-history', `<div style="color:var(--muted); font-size:0.85rem">Loading orders…</div>`);
+  let apiOrders = [];
+  try {
+    const token = await client.getTokenSilently({
+      authorizationParams: { audience: AUTH0_AUDIENCE, scope: 'place:order' }
+    });
+    const res = await fetch('/api/orders', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.ok) apiOrders = await res.json();
+  } catch (e) { /* silent — fall back to ID token */ }
+
+  // ── Feature 4: Also check ID token custom claim (Post-Login Action) ──
+  const tokenOrders = idTokenClaims?.['https://pizza42.com/orders'] || [];
+
+  // Merge: API orders are live; token orders are from last login
+  const orders = apiOrders.length > 0 ? apiOrders : tokenOrders;
+
+  if (orders.length === 0) {
+    html('order-history', `
+      <div style="color:var(--muted); padding: 1.5rem 0; text-align:center">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem">📭</div>
+        No orders yet — place one from the cart!
+      </div>`);
+  } else {
+    html('order-history', [...orders].reverse().map(o => `
+      <div class="order-card">
+        <div class="order-card-header">
+          <span class="order-id">Order #${o.id}</span>
+          <span class="order-date">${new Date(o.placedAt).toLocaleString()}</span>
+        </div>
+        <div class="order-items-text">
+          ${(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(' &nbsp;·&nbsp; ')}
+        </div>
+        <div class="order-total-row">Total: $${Number(o.total).toFixed(2)}</div>
+      </div>`).join(''));
+  }
+
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Bootstrap
+// ═══════════════════════════════════════════════════════════════════════
+(async () => {
+  try {
+    // ── Feature 1: Init Auth0 client (Universal Login) ───────────────
+    window.client = await auth0.createAuth0Client({
+      domain: AUTH0_DOMAIN,
+      clientId: AUTH0_CLIENT_ID,
+      authorizationParams: {
+        redirect_uri: location.origin,
+        audience: AUTH0_AUDIENCE,
+        scope: 'openid profile email place:order offline_access'
+      },
+      cacheLocation: 'localstorage',
+      useRefreshTokens: true
+    });
+
+    if (location.search.includes('error=')) {
+      const p = new URLSearchParams(location.search);
+      const error = p.get('error');
+      history.replaceState({}, '', location.pathname);
+
+      if (error === 'access_denied') {
+        // Clear the Auth0 session so the consent screen won't auto-appear next time.
+        // After logout, Auth0 redirects back here and the user sees a clean login form.
+        await client.logout({ logoutParams: { returnTo: location.origin + '?declined=1' } });
+        return;
+      }
+    }
+
+    // Show a friendly message if they were just redirected back after declining
+    if (location.search.includes('declined=1')) {
+      history.replaceState({}, '', location.pathname);
+      show('auth-error-banner');
+      html('auth-error-banner', `
+        <div class="auth-error-box">
+          <div>
+            <strong>You declined the authorisation.</strong><br>
+            <span>No problem — browse the menu freely. Sign in whenever you're ready to order.</span>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-shrink:0;">
+            <button class="btn-signup" style="color:#7c5000; border-color:#f59e0b;" onclick="client.loginWithRedirect({authorizationParams:{screen_hint:'signup'}})">Sign Up</button>
+            <button class="btn-login"  onclick="client.loginWithRedirect()">Sign In</button>
+          </div>
+        </div>`);
+    }
+
+    let postLoginPage = null;
+    let stepUpJustDone = false;
+    if (location.search.includes('code=') && location.search.includes('state=')) {
+      try {
+        const result = await client.handleRedirectCallback();
+        postLoginPage  = result.appState?.targetUrl  || null;
+        stepUpJustDone = result.appState?.stepUpDone || false;
+        if (stepUpJustDone) mfaVerified = true;
+      } catch (callbackErr) {
+        // Invalid state errors happen after email verification redirects —
+        // Auth0 sends the user back with its own state that doesn't match the SDK.
+        // Safe to ignore: just clean the URL and continue loading normally.
+        console.warn('Redirect callback error (likely email verification redirect):', callbackErr.message);
+      }
+      history.replaceState({}, '', location.pathname);
+    }
+
+    if (await client.isAuthenticated()) {
+      currentUser   = await client.getUser();
+      idTokenClaims = await client.getIdTokenClaims();
+
+      // Clear cart if a different user has logged in
+      const _storedCartUser = sessionStorage.getItem('pizza42_cart_user');
+      if (_storedCartUser && _storedCartUser !== currentUser.sub) {
+        cart = {};
+        sessionStorage.removeItem('pizza42_cart');
+        renderCart();
+      }
+      sessionStorage.setItem('pizza42_cart_user', currentUser.sub);
+
+      // Fetch fresh user_metadata from backend — the ID token claim is only set at
+      // login time, so a saved address from a previous session won't be in
+      // idTokenClaims without this live fetch.
+      try {
+        const _metaToken = await client.getTokenSilently();
+        const _metaRes   = await fetch('/api/user/metadata', {
+          headers: { Authorization: `Bearer ${_metaToken}` }
+        });
+        if (_metaRes.ok) {
+          // Replace entirely — never merge. Object.assign would leave stale keys
+          // (e.g. a previous user's saved card) if this user has no saved card.
+          idTokenClaims['https://pizza42.com/user_metadata'] = await _metaRes.json();
+        }
+      } catch (_metaErr) {
+        console.warn('Could not refresh user_metadata:', _metaErr.message);
+      }
+
+      hide('btn-signin');
+      hide('btn-signup');
+      show('btn-signout');
+      show('nav-dashboard');
+      hide('hero-signin-btn');
+      hide('login-banner');
+    } else {
+      show('btn-signup');
+      show('btn-signin');
+      show('hero-signin-btn');
+      show('login-banner');
+    }
+
+    renderMenu();
+    renderCart();
+    renderWelcomeBack().catch(console.error);
+
+    // After login redirect → go to intended page (e.g. payment)
+    if (postLoginPage && ['cart','payment','dashboard'].includes(postLoginPage)) {
+      showPage(postLoginPage, false);
+      // If returning from Step-Up MFA, show verified notice on payment page
+      if (stepUpJustDone && postLoginPage === 'payment') {
+        html('pay-feedback',
+          `<div class="alert alert-success">🛡️ <strong>MFA verified!</strong> Your identity is confirmed — please review your order and click Confirm &amp; Pay.</div>`);
+      }
+    } else {
+      // Navigate to the page in the URL hash (e.g. localhost:8080/#cart)
+      const initPage = location.hash.replace('#', '') || 'menu';
+      if (['cart','payment','dashboard'].includes(initPage)) showPage(initPage, false);
+    }
+
+  } catch (err) {
+    document.body.innerHTML = `
+      <div style="max-width:500px; margin:4rem auto; padding:2rem; font-family:sans-serif; text-align:center;">
+        <div style="font-size:3rem; margin-bottom:1rem">⚠️</div>
+        <h2 style="color:#c0392b">Initialisation error</h2>
+        <p style="color:#777; margin-top:0.5rem">${err.message}</p>
+      </div>`;
+  }
+})();
+</script>
+</body>
+</html>

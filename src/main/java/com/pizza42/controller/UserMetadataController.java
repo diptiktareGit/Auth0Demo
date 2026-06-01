@@ -48,11 +48,13 @@ public class UserMetadataController {
         // Merge in only the fields that are actually present in the request body
         // (don't overwrite existing fields like fav_pizza or orders with defaults
         //  when the body is just an address-save or preference-save payload)
-        if (body.containsKey("address"))           existingMeta.put("saved_address",     body.get("address"));
-        if (body.containsKey("cardLast4"))         existingMeta.put("saved_card_last4",  body.get("cardLast4"));
-        if (body.containsKey("fav_pizza"))         existingMeta.put("fav_pizza",         body.get("fav_pizza"));
-        if (body.containsKey("birthday"))          existingMeta.put("birthday",          body.get("birthday"));
-        if (body.containsKey("marketing_consent")) existingMeta.put("marketing_consent", body.get("marketing_consent"));
+        if (body.containsKey("address"))                  existingMeta.put("saved_address",           body.get("address"));
+        if (body.containsKey("cardLast4"))                existingMeta.put("saved_card_last4",        body.get("cardLast4"));
+        if (body.containsKey("fav_pizza"))                existingMeta.put("fav_pizza",               body.get("fav_pizza"));
+        if (body.containsKey("birthday"))                 existingMeta.put("birthday",                body.get("birthday"));
+        if (body.containsKey("marketing_consent"))        existingMeta.put("marketing_consent",       body.get("marketing_consent"));
+        // Loyalty reward redemption tracking
+        if (body.containsKey("garlic_bread_base_count")) existingMeta.put("garlic_bread_base_count", body.get("garlic_bread_base_count"));
 
         managementService.patchUserMetadata(userId, existingMeta);
 
