@@ -50,6 +50,50 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+
+      <!-- Azure App Service deployment plugin -->
+      <plugin>
+        <groupId>com.microsoft.azure</groupId>
+        <artifactId>azure-webapp-maven-plugin</artifactId>
+        <version>2.13.0</version>
+        <configuration>
+          <subscriptionId>dca1d6a7-1a43-4593-a921-37bf803e49d2</subscriptionId>
+          <resourceGroup>pizza42-rg</resourceGroup>
+          <appName>pizza42-auth0-demo</appName>
+          <region>eastus</region>
+          <pricingTier>F1</pricingTier>
+          <runtime>
+            <os>Linux</os>
+            <javaVersion>Java 21</javaVersion>
+            <webContainer>Java SE</webContainer>
+          </runtime>
+          <alwaysOn>false</alwaysOn>
+          <deployment>
+            <resources>
+              <resource>
+                <directory>${project.basedir}/target</directory>
+                <includes>
+                  <include>*.jar</include>
+                </includes>
+              </resource>
+            </resources>
+          </deployment>
+          <appSettings>
+            <property>
+              <name>AUTH0_DOMAIN</name>
+              <value>dipti-test.us.auth0.com</value>
+            </property>
+            <property>
+              <name>AUTH0_MGMT_CLIENT_ID</name>
+              <value>fPyYFfyx8Bz9pYtiGp7yUbLAYFvVK6uU</value>
+            </property>
+            <property>
+              <name>AUTH0_MGMT_CLIENT_SECRET</name>
+              <value>HggC1QZjVEMvdovRNPIjKg6UN-lB-55LLTDoWnAqtdQZSm6SLxYkDYot16gMUMii</value>
+            </property>
+          </appSettings>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

@@ -992,6 +992,13 @@ async function saveProfilingData() {
     });
     if (!res.ok) throw new Error('Save failed');
     html('prof-feedback', '<div class="alert alert-success" style="margin-top:0.5rem;">✅ Preferences saved to your Auth0 profile!</div>');
+    // Update local ID token cache so renderDashboard shows preferences immediately
+    if (!idTokenClaims['https://pizza42.com/user_metadata']) {
+      idTokenClaims['https://pizza42.com/user_metadata'] = {};
+    }
+    idTokenClaims['https://pizza42.com/user_metadata'].fav_pizza         = favPizza;
+    idTokenClaims['https://pizza42.com/user_metadata'].birthday          = birthday;
+    idTokenClaims['https://pizza42.com/user_metadata'].marketing_consent = marketing;
     setTimeout(() => { closeProfilingModal(); renderDashboard(); }, 1500);
   } catch(e) {
     html('prof-feedback', '<div class="alert alert-error" style="margin-top:0.5rem;">❌ Could not save. Try again.</div>');
@@ -1327,9 +1334,10 @@ async function renderDashboard() {
       authorizationParams: {
         redirect_uri: location.origin,
         audience: AUTH0_AUDIENCE,
-        scope: 'openid profile email place:order'
+        scope: 'openid profile email place:order offline_access'
       },
-      cacheLocation: 'memory'
+      cacheLocation: 'localstorage',
+      useRefreshTokens: true
     });
 
     if (location.search.includes('error=')) {
@@ -1365,10 +1373,17 @@ async function renderDashboard() {
     let postLoginPage = null;
     let stepUpJustDone = false;
     if (location.search.includes('code=') && location.search.includes('state=')) {
-      const result = await client.handleRedirectCallback();
-      postLoginPage  = result.appState?.targetUrl  || null;
-      stepUpJustDone = result.appState?.stepUpDone || false;
-      if (stepUpJustDone) mfaVerified = true; // persist for this page session
+      try {
+        const result = await client.handleRedirectCallback();
+        postLoginPage  = result.appState?.targetUrl  || null;
+        stepUpJustDone = result.appState?.stepUpDone || false;
+        if (stepUpJustDone) mfaVerified = true;
+      } catch (callbackErr) {
+        // Invalid state errors happen after email verification redirects —
+        // Auth0 sends the user back with its own state that doesn't match the SDK.
+        // Safe to ignore: just clean the URL and continue loading normally.
+        console.warn('Redirect callback error (likely email verification redirect):', callbackErr.message);
+      }
       history.replaceState({}, '', location.pathname);
     }
 
