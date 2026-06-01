@@ -60,9 +60,9 @@ cd Auth0Demo
 Create the following in your Auth0 dashboard:
 
 **Single Page Application**
-- Allowed Callback URLs: `http://localhost:8080`
-- Allowed Logout URLs: `http://localhost:8080`
-- Allowed Web Origins: `http://localhost:8080`
+- Allowed Callback URLs: `http://localhost:8080`, 'https://pizza42-auth0-demo-gph0bgbpa8eyfmbh.centralus-01.azurewebsites.net/#'
+- Allowed Logout URLs: `http://localhost:8080`, 'https://pizza42-auth0-demo-gph0bgbpa8eyfmbh.centralus-01.azurewebsites.net/#'
+- Allowed Web Origins: `http://localhost:8080`, 'https://pizza42-auth0-demo-gph0bgbpa8eyfmbh.centralus-01.azurewebsites.net/#'
 
 **API**
 - Identifier: `https://pizza42`
