@@ -41,11 +41,27 @@ public class OrdersController {
         order.put("total", body.get("total"));
         order.put("placedAt", Instant.now().toString());
 
-        // Save to in-memory cache
+        // If in-memory cache is empty for this user (e.g. after a server restart),
+        // restore existing orders from Auth0 first so we don't lose history.
+        if (!store.containsKey(userId)) {
+            try {
+                Map<String, Object> meta = managementService.getUserMetadata(userId);
+                Object saved = meta.get("orders");
+                if (saved instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> persisted = (List<Map<String, Object>>) saved;
+                    store.put(userId, new ArrayList<>(persisted));
+                }
+            } catch (Exception e) {
+                System.err.println("[OrdersController] Could not pre-load orders from Auth0: " + e.getMessage());
+            }
+        }
+
+        // Append new order to the (now-restored) in-memory list
         List<Map<String, Object>> userOrders = store.computeIfAbsent(userId, k -> new ArrayList<>());
         userOrders.add(order);
 
-        // Persist full order list to Auth0 user_metadata (non-fatal if it fails)
+        // Persist full order list back to Auth0 user_metadata (non-fatal if it fails)
         try {
             Map<String, Object> meta = managementService.getUserMetadata(userId);
             meta.put("orders", userOrders);

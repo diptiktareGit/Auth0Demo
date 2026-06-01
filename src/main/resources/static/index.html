@@ -574,14 +574,6 @@
 <!-- ════════════════════════════ PAGE 2: CART ════════════════════════════ -->
 <div id="page-cart" class="page" hidden>
 
-  <div class="auth0-callout">
-    <strong>📧 Auth0 Feature 2 — Email Verification Guard:</strong>
-    "Place Order" reads <code>email_verified</code> from the ID token and blocks unverified users with a clear message.
-    &nbsp;&nbsp;
-    <strong>🛡️ Auth0 Feature 3 — Scoped API Access:</strong>
-    The order request sends an access token with scope <code>place:order</code>. Spring Boot returns 403 without it.
-  </div>
-
   <h2 class="section-title">Your Cart</h2>
   <p class="section-sub">Review your order before placing it.</p>
 
@@ -608,12 +600,6 @@
 <!-- ══════════════════════════ PAGE 3: PAYMENT ═══════════════════════════ -->
 <div id="page-payment" class="page" hidden>
 
-  <div class="auth0-callout">
-    <strong>🔐 Auth0 helps at checkout too:</strong>
-    Your name &amp; email are pre-filled from your <strong>Auth0 ID token</strong> — no extra form needed.
-    Delivery addresses can be saved to <code>user_metadata</code> for one-click reorder next time.
-    Auth0 can also enforce <strong>Step-Up MFA</strong> before high-value payments.
-  </div>
 
   <div class="payment-grid">
 
@@ -1213,15 +1199,20 @@ async function submitOrder() {
     // Save address + card to Auth0 user_metadata (only if checkbox ticked)
     const saveAddress = $('pay-save-address')?.checked !== false;
     if (saveAddress) {
+      const zip = $('pay-zip').value.trim();
+      const last4 = card.slice(-4);
       try {
         await fetch('/api/user/metadata', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            address:  { street, city, zip: $('pay-zip').value.trim() },
-            cardLast4: card.slice(-4)
-          })
+          body: JSON.stringify({ address: { street, city, zip }, cardLast4: last4 })
         });
+        // Update local cache so the next payment page visit pre-fills immediately
+        if (!idTokenClaims['https://pizza42.com/user_metadata']) {
+          idTokenClaims['https://pizza42.com/user_metadata'] = {};
+        }
+        idTokenClaims['https://pizza42.com/user_metadata'].saved_address    = { street, city, zip };
+        idTokenClaims['https://pizza42.com/user_metadata'].saved_card_last4 = last4;
       } catch (e) { console.warn('Could not save user metadata:', e); }
     }
 
@@ -1399,6 +1390,24 @@ async function renderDashboard() {
         renderCart();
       }
       sessionStorage.setItem('pizza42_cart_user', currentUser.sub);
+
+      // Fetch fresh user_metadata from backend — the ID token claim is only set at
+      // login time, so a saved address from a previous session won't be in
+      // idTokenClaims without this live fetch.
+      try {
+        const _metaToken = await client.getTokenSilently();
+        const _metaRes   = await fetch('/api/user/metadata', {
+          headers: { Authorization: `Bearer ${_metaToken}` }
+        });
+        if (_metaRes.ok) {
+          // Replace entirely — never merge. Object.assign would leave stale keys
+          // (e.g. a previous user's saved card) if this user has no saved card.
+          idTokenClaims['https://pizza42.com/user_metadata'] = await _metaRes.json();
+        }
+      } catch (_metaErr) {
+        console.warn('Could not refresh user_metadata:', _metaErr.message);
+      }
+
       hide('btn-signin');
       hide('btn-signup');
       show('btn-signout');

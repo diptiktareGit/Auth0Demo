@@ -19,6 +19,18 @@ public class UserMetadataController {
         this.managementService = managementService;
     }
 
+    // Fetch current user_metadata from Auth0 (always fresh — bypasses ID token cache)
+    @GetMapping("/metadata")
+    public ResponseEntity<?> getMetadata(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getSubject();
+        try {
+            Map<String, Object> meta = managementService.getUserMetadata(userId);
+            return ResponseEntity.ok(meta);
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of());
+        }
+    }
+
     // Save address, card-last4, preferences to Auth0 user_metadata
     @PostMapping("/metadata")
     public ResponseEntity<?> saveMetadata(
@@ -33,12 +45,14 @@ public class UserMetadataController {
             existingMeta = managementService.getUserMetadata(userId);
         } catch (Exception ignored) {}
 
-        // Merge in the new fields sent by the frontend
-        existingMeta.put("saved_address",     body.getOrDefault("address",           Map.of()));
-        existingMeta.put("saved_card_last4",  body.getOrDefault("cardLast4",         ""));
-        existingMeta.put("fav_pizza",         body.getOrDefault("fav_pizza",         ""));
-        existingMeta.put("birthday",          body.getOrDefault("birthday",          ""));
-        existingMeta.put("marketing_consent", body.getOrDefault("marketing_consent", false));
+        // Merge in only the fields that are actually present in the request body
+        // (don't overwrite existing fields like fav_pizza or orders with defaults
+        //  when the body is just an address-save or preference-save payload)
+        if (body.containsKey("address"))           existingMeta.put("saved_address",     body.get("address"));
+        if (body.containsKey("cardLast4"))         existingMeta.put("saved_card_last4",  body.get("cardLast4"));
+        if (body.containsKey("fav_pizza"))         existingMeta.put("fav_pizza",         body.get("fav_pizza"));
+        if (body.containsKey("birthday"))          existingMeta.put("birthday",          body.get("birthday"));
+        if (body.containsKey("marketing_consent")) existingMeta.put("marketing_consent", body.get("marketing_consent"));
 
         managementService.patchUserMetadata(userId, existingMeta);
 
