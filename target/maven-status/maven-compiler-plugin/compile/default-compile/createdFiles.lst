@@ -1,6 +1,0 @@
-com\pizza42\controller\UserMetadataController.class
-com\pizza42\Pizza42ApiApplication.class
-com\pizza42\config\SecurityConfig.class
-com\pizza42\controller\OrdersController.class
-com\pizza42\config\AudienceValidator.class
-com\pizza42\service\Auth0ManagementService.class
