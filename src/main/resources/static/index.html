@@ -292,8 +292,8 @@
 
     /* ── WELCOME BACK SECTION ────────────────────────────────────────────── */
     .welcome-back-wrap {
-      background: #fff;
-      border-bottom: 1px solid #e8e8e8;
+      background: #161616;
+      border-bottom: 1px solid #2a2a2a;
       padding: 1.25rem 0 1.5rem;
       margin-bottom: 1.75rem;
     }
@@ -304,7 +304,7 @@
     }
     .welcome-greeting h3 {
       font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 700;
-      color: var(--text);
+      color: #ffffff;
     }
     .welcome-greeting .segment-badge {
       background: var(--red); color: #fff;
@@ -316,16 +316,16 @@
     }
     .past-order-card {
       flex: 0 0 280px;
-      background: var(--cream); border: 1px solid #e8e0d4;
+      background: #222; border: 1px solid #333;
       border-radius: 10px; padding: 1rem 1.1rem;
       display: flex; flex-direction: column; gap: 0.5rem;
     }
     .poc-header {
       display: flex; justify-content: space-between; align-items: flex-start;
     }
-    .poc-id { font-weight: 700; font-size: 0.85rem; color: var(--text); }
-    .poc-date { font-size: 0.75rem; color: var(--muted); }
-    .poc-items { font-size: 0.83rem; color: #555; line-height: 1.5; }
+    .poc-id { font-weight: 700; font-size: 0.85rem; color: #fff; }
+    .poc-date { font-size: 0.75rem; color: #888; }
+    .poc-items { font-size: 0.83rem; color: #aaa; line-height: 1.5; }
     .poc-footer {
       display: flex; justify-content: space-between; align-items: center;
       margin-top: 0.25rem;
@@ -975,11 +975,20 @@ async function renderWelcomeBack() {
     const orders = await res.json();
 
     // Loyalty check — orders since last redemption must be >= 3
-    // baseCount is saved to user_metadata when reward is claimed, so the counter resets
-    const freshMeta    = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
-    const baseCount    = freshMeta.garlic_bread_base_count || 0;
+    const freshMeta  = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
+    const baseCount  = freshMeta.garlic_bread_base_count || 0;
+
+    // Also detect redemptions by scanning order history for past garlic bread orders.
+    // This handles cases where baseCount wasn't saved (e.g. first claim before fix).
+    const lastGBIndex = [...orders].reverse().findIndex(o =>
+      (o.items || []).some(i => i.id === 99 || i.name === 'Garlic Bread')
+    );
+    const lastGBCount = lastGBIndex !== -1 ? (orders.length - lastGBIndex) : 0;
+    // Use whichever base is more recent
+    const effectiveBase = Math.max(baseCount, lastGBCount);
+
     const claimReward  = idTokenClaims?.['https://pizza42.com/free_garlic_bread'] === true;
-    const earnedReward = claimReward || (orders.length - baseCount) >= 3;
+    const earnedReward = claimReward || (orders.length - effectiveBase) >= 3;
     const alreadyInCart = !!cart[99];
 
     if (earnedReward) {
@@ -1028,7 +1037,7 @@ async function renderWelcomeBack() {
            <p style="color:#aaa;font-size:0.78rem;">💡 Place 3 orders to unlock a free Garlic Bread loyalty reward.</p>`);
     } else {
       const recent = [...orders].reverse().slice(0, 3);
-      const ordersSinceRedemption = orders.length - baseCount;
+      const ordersSinceRedemption = orders.length - effectiveBase;
       const remaining = 3 - ordersSinceRedemption;
       const progressHtml = remaining > 0
         ? `<p style="color:#aaa;font-size:0.78rem;margin-bottom:0.75rem;">💡 ${remaining} more order${remaining>1?'s':''} to unlock free Garlic Bread 🧄</p>`
@@ -1066,7 +1075,7 @@ function reorder(items) {
   if (!items || !items.length) return;
   items.forEach(item => {
     const menuItem = MENU.find(m => m.id === item.id);
-    if (!menuItem) return;
+    if (!menuItem || menuItem.loyalty) return; // skip loyalty-only items
     if (cart[item.id]) {
       cart[item.id].qty += (item.qty || 1);
     } else {
