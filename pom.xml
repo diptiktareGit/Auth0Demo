@@ -78,20 +78,10 @@
               </resource>
             </resources>
           </deployment>
-          <appSettings>
-            <property>
-              <name>AUTH0_DOMAIN</name>
-              <value>dipti-test.us.auth0.com</value>
-            </property>
-            <property>
-              <name>AUTH0_MGMT_CLIENT_ID</name>
-              <value>fPyYFfyx8Bz9pYtiGp7yUbLAYFvVK6uU</value>
-            </property>
-            <property>
-              <name>AUTH0_MGMT_CLIENT_SECRET</name>
-              <value>HggC1QZjVEMvdovRNPIjKg6UN-lB-55LLTDoWnAqtdQZSm6SLxYkDYot16gMUMii</value>
-            </property>
-          </appSettings>
+          <!-- Environment variables are set directly in Azure Portal →
+               App Service → Settings → Environment variables.
+               Do NOT add secrets here — pom.xml is committed to git.
+               Required vars: AUTH0_DOMAIN, AUTH0_MGMT_CLIENT_ID, AUTH0_MGMT_CLIENT_SECRET -->
         </configuration>
       </plugin>
     </plugins>
