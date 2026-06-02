@@ -11,6 +11,21 @@ async function placeOrder() {
   }
 
   // Feature 2: Email Verification Guard
+  // The cached ID token from login still says email_verified:false even after
+  // the user clicks the verification link. So if it looks unverified, force a
+  // FRESH token (bypassing the SDK cache) and re-read the profile before deciding.
+  if (!currentUser.email_verified) {
+    hide('email-warn');
+    html('order-feedback', '<div class="alert alert-warn">⏳ Checking your verification status…</div>');
+    try {
+      await client.getTokenSilently({ cacheMode: 'off' }); // re-issue tokens from Auth0
+      currentUser   = await client.getUser();              // re-read updated profile
+      idTokenClaims = await client.getIdTokenClaims();
+    } catch (e) {
+      console.warn('Could not refresh verification status:', e);
+    }
+  }
+
   if (!currentUser.email_verified) {
     show('email-warn');
     html('order-feedback', '');
