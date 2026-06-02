@@ -79,6 +79,16 @@
       }
       sessionStorage.setItem('pizza42_cart_user', currentUser.sub);
 
+      // Count browser sessions per user — drives progressive profiling reliably,
+      // independent of token login_count quirks (e.g. signup auto-login). The
+      // sessionStorage flag resets each browser session, so this increments
+      // exactly once per session (not on in-session reloads).
+      if (!sessionStorage.getItem('pizza42_session_active')) {
+        sessionStorage.setItem('pizza42_session_active', '1');
+        const _sk = `pizza42_session_count_${currentUser.sub}`;
+        localStorage.setItem(_sk, String((parseInt(localStorage.getItem(_sk)) || 0) + 1));
+      }
+
       // user_metadata (saved address / card / prefs), order history, segment
       // and loyalty status all arrive as ID token claims set by the Post-Login
       // Action (auth0-actions/post-login-pizza42.js) — no extra fetch needed.

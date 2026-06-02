@@ -21,8 +21,7 @@ async function renderDashboard() {
   `);
 
   // Marketing Insights from Auth0 app_metadata claims
-  const loginCount = idTokenClaims?.['https://pizza42.com/login_count'] || 1;
-  const meta       = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
+  const meta = idTokenClaims?.['https://pizza42.com/user_metadata'] || {};
 
   const prefLine = meta.fav_pizza
     ? `<div class="pref-row">🍕 Favourite: <span>${meta.fav_pizza}</span>${meta.birthday ? `&nbsp;·&nbsp; 🎂 Birthday: <span>${meta.birthday}</span>` : ''}&nbsp;<a href="#" onclick="openProfilingModal();return false;" style="font-size:0.78rem;color:#b45309;margin-left:0.5rem;">✏️ Update</a></div>`
@@ -30,8 +29,14 @@ async function renderDashboard() {
 
   html('marketing-insights', prefLine);
 
-  // Progressive profiling: prompt on 2nd login if no preferences saved yet
-  if (loginCount === 2 && !meta.fav_pizza) {
+  // Progressive profiling — never interrupt a brand-new user on their FIRST
+  // session. We count browser sessions locally (incremented once per session in
+  // app.js, which is immune to login_count quirks like signup auto-login), and
+  // only nudge a RETURNING user, once, if they've saved no preferences yet.
+  const _sessionCount = parseInt(localStorage.getItem(`pizza42_session_count_${currentUser.sub}`)) || 1;
+  const _promptKey    = `pizza42_profiling_prompted_${currentUser.sub}`;
+  if (_sessionCount >= 2 && !meta.fav_pizza && !localStorage.getItem(_promptKey)) {
+    localStorage.setItem(_promptKey, '1');
     setTimeout(() => openProfilingModal(), 800);
   }
 
