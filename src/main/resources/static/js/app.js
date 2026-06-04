@@ -58,9 +58,6 @@
         stepUpJustDone = result.appState?.stepUpDone || false;
         if (stepUpJustDone) mfaVerified = true;
       } catch (callbackErr) {
-        // Invalid state errors happen after email-verification redirects —
-        // Auth0 sends the user back with its own state that doesn't match the SDK.
-        // Safe to ignore: just clean the URL and continue loading normally.
         console.warn('Redirect callback error (likely email verification redirect):', callbackErr.message);
       }
       history.replaceState({}, '', location.pathname);

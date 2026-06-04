@@ -3,9 +3,12 @@ exports.onExecutePostLogin = async (event, api) => {
   const NS = 'https://pizza42.com/';
 
   // ── Source data (Auth0 is the system of record) ──────────────────────
+  // Preferences live in user_metadata (user-owned). Order history & loyalty
+  // markers live in app_metadata (APP-controlled, not user-editable).
   const userMeta = event.user.user_metadata || {};
   const appMeta  = event.user.app_metadata  || {};
-  const orders   = Array.isArray(userMeta.orders) ? userMeta.orders : [];
+  const orders   = Array.isArray(appMeta.orders) ? appMeta.orders
+                 : Array.isArray(userMeta.orders) ? userMeta.orders : [];  // legacy fallback
   const orderCount = orders.length;
 
   // ── Login tracking (persisted to app_metadata so it survives sessions) ─
@@ -21,7 +24,8 @@ exports.onExecutePostLogin = async (event, api) => {
 
   // ── Loyalty reward: free garlic bread after 3 orders since last claim ──
   // baseCount is the order count captured the last time the reward was claimed.
-  const baseCount = userMeta.garlic_bread_base_count || 0;
+  // App-controlled, so it lives in app_metadata (with a legacy user_metadata fallback).
+  const baseCount = appMeta.garlic_bread_base_count ?? userMeta.garlic_bread_base_count ?? 0;
 
   // Retroactively detect a past redemption by finding the most recent order
   // that contained garlic bread (handles users who claimed before baseCount

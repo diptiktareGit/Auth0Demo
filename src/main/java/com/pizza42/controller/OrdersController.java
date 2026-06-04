@@ -53,13 +53,8 @@ public class OrdersController {
         // restore existing orders from Auth0 first so we don't lose history.
         if (!store.containsKey(userId)) {
             try {
-                Map<String, Object> meta = managementService.getUserMetadata(userId);
-                Object saved = meta.get("orders");
-                if (saved instanceof List) {
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> persisted = (List<Map<String, Object>>) saved;
-                    store.put(userId, new ArrayList<>(persisted));
-                }
+                List<Map<String, Object>> persisted = loadPersistedOrders(userId);
+                if (!persisted.isEmpty()) store.put(userId, persisted);
             } catch (Exception e) {
                 System.err.println("[OrdersController] Could not pre-load orders from Auth0: " + e.getMessage());
             }
@@ -69,11 +64,12 @@ public class OrdersController {
         List<Map<String, Object>> userOrders = store.computeIfAbsent(userId, k -> new ArrayList<>());
         userOrders.add(order);
 
-        // Persist full order list back to Auth0 user_metadata (non-fatal if it fails)
+        // Persist full order list back to Auth0 APP metadata — app-controlled and
+        // NOT user-editable, so order history can't be tampered with. Non-fatal.
         try {
-            Map<String, Object> meta = managementService.getUserMetadata(userId);
-            meta.put("orders", userOrders);
-            managementService.patchUserMetadata(userId, meta);
+            Map<String, Object> appMeta = managementService.getAppMetadata(userId);
+            appMeta.put("orders", userOrders);
+            managementService.patchAppMetadata(userId, appMeta);
         } catch (Exception e) {
             System.err.println("[OrdersController] Failed to persist orders to Auth0: " + e.getMessage());
         }
@@ -81,7 +77,6 @@ public class OrdersController {
         return ResponseEntity.status(201).body(order);
     }
 
-    @SuppressWarnings("unchecked")
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getOrders(@AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getSubject();
@@ -92,12 +87,9 @@ public class OrdersController {
             return ResponseEntity.ok(memOrders);
         }
         try {
-            Map<String, Object> meta = managementService.getUserMetadata(userId);
-            Object saved = meta.get("orders");
-            if (saved instanceof List) {
-                List<Map<String, Object>> persistedOrders = (List<Map<String, Object>>) saved;
-                // Reload into memory cache for this session
-                store.put(userId, new ArrayList<>(persistedOrders));
+            List<Map<String, Object>> persistedOrders = loadPersistedOrders(userId);
+            if (!persistedOrders.isEmpty()) {
+                store.put(userId, persistedOrders);   // reload into memory cache for this session
                 return ResponseEntity.ok(persistedOrders);
             }
         } catch (Exception e) {
@@ -105,5 +97,21 @@ public class OrdersController {
         }
 
         return ResponseEntity.ok(List.of());
+    }
+
+    /**
+     * Loads a user's order history from Auth0. Orders now live in app_metadata
+     * (app-controlled). For users whose history predates this move, we fall back
+     * to user_metadata once — the next order re-persists it to app_metadata.
+     */
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> loadPersistedOrders(String userId) {
+        Object saved = managementService.getAppMetadata(userId).get("orders");
+        if (!(saved instanceof List)) {
+            saved = managementService.getUserMetadata(userId).get("orders");  // legacy fallback
+        }
+        return (saved instanceof List)
+            ? new ArrayList<>((List<Map<String, Object>>) saved)
+            : new ArrayList<>();
     }
 }

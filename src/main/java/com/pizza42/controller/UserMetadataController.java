@@ -53,10 +53,15 @@ public class UserMetadataController {
         if (body.containsKey("fav_pizza"))                existingMeta.put("fav_pizza",               body.get("fav_pizza"));
         if (body.containsKey("birthday"))                 existingMeta.put("birthday",                body.get("birthday"));
         if (body.containsKey("marketing_consent"))        existingMeta.put("marketing_consent",       body.get("marketing_consent"));
-        // Loyalty reward redemption tracking
-        if (body.containsKey("garlic_bread_base_count")) existingMeta.put("garlic_bread_base_count", body.get("garlic_bread_base_count"));
 
         managementService.patchUserMetadata(userId, existingMeta);
+
+        if (body.containsKey("garlic_bread_base_count")) {
+            Map<String, Object> appMeta = new LinkedHashMap<>();
+            try { appMeta = managementService.getAppMetadata(userId); } catch (Exception ignored) {}
+            appMeta.put("garlic_bread_base_count", body.get("garlic_bread_base_count"));
+            managementService.patchAppMetadata(userId, appMeta);
+        }
 
         return ResponseEntity.ok(Map.of("saved", true));
     }

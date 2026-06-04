@@ -103,4 +103,27 @@ public class Auth0ManagementService {
             userUri(userId), HttpMethod.PATCH,
             new HttpEntity<>(payload, headers), Map.class);
     }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getAppMetadata(String userId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getManagementToken());
+
+        ResponseEntity<Map> res = restTemplate.exchange(
+            userUri(userId), HttpMethod.GET, new HttpEntity<>(headers), Map.class);
+
+        Object meta = res.getBody().get("app_metadata");
+        return (meta instanceof Map) ? (Map<String, Object>) meta : new LinkedHashMap<>();
+    }
+
+    public void patchAppMetadata(String userId, Map<String, Object> metadata) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(getManagementToken());
+
+        Map<String, Object> payload = Map.of("app_metadata", metadata);
+        restTemplate.exchange(
+            userUri(userId), HttpMethod.PATCH,
+            new HttpEntity<>(payload, headers), Map.class);
+    }
 }
