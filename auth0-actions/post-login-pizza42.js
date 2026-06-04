@@ -1,26 +1,4 @@
-/**
- * Pizza 42 — Consolidated Post-Login Action
- * ─────────────────────────────────────────────────────────────────────────
- * This single Action runs on every login and pushes ALL personalisation +
- * business logic into the ID token as custom claims. The frontend then just
- * reads claims — no client-side loyalty math, no extra metadata round-trips.
- *
- * Claims set (namespace must be a URL you control — Auth0 requirement):
- *   https://pizza42.com/orders               full order history (array)
- *   https://pizza42.com/user_metadata        saved address / card / prefs (object)
- *   https://pizza42.com/login_count          number of logins (this one included)
- *   https://pizza42.com/first_login          ISO timestamp of first ever login
- *   https://pizza42.com/segment              'new' | 'regular' | 'loyal'
- *   https://pizza42.com/free_garlic_bread    boolean — loyalty reward unlocked?
- *   https://pizza42.com/orders_until_reward  number of orders left until reward
- *
- * How to deploy:
- *   1. Auth0 Dashboard → Actions → Library → Create Action
- *   2. Trigger: "Login / Post Login"
- *   3. Paste this code, click Deploy
- *   4. Auth0 Dashboard → Actions → Flows → Login → drag this action into the flow
- *   5. (Remove any older single-purpose action so claims aren't set twice.)
- */
+
 exports.onExecutePostLogin = async (event, api) => {
   const NS = 'https://pizza42.com/';
 
@@ -71,8 +49,10 @@ exports.onExecutePostLogin = async (event, api) => {
   api.idToken.setCustomClaim(NS + 'free_garlic_bread',   freeGarlicBread);
   api.idToken.setCustomClaim(NS + 'orders_until_reward', ordersUntilReward);
 
-  // Surface a couple of claims in the access token too, so the API can make
-  // server-side decisions (e.g. segment-based pricing) without a DB lookup.
-  api.accessToken.setCustomClaim(NS + 'segment', segment);
-  api.accessToken.setCustomClaim(NS + 'orders',  orders);
+  // Keep the access token LEAN — it rides on EVERY API request. Expose only
+  // small, decision-driving signals; the full order history is intentionally NOT
+  // included here (the API reads it from GET /api/orders / its own store when
+  // needed). The ID token still carries the detailed list for the SPA to render.
+  api.accessToken.setCustomClaim(NS + 'segment',     segment);
+  api.accessToken.setCustomClaim(NS + 'order_count', orderCount);
 };

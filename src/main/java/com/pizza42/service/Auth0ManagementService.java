@@ -74,6 +74,24 @@ public class Auth0ManagementService {
         return (meta instanceof Map) ? (Map<String, Object>) meta : new LinkedHashMap<>();
     }
 
+    /**
+     * Returns the LIVE email_verified status straight from Auth0, not from the
+     * access token. The token can't be trusted as a fresh source for this flag
+     * (Actions don't re-run on silent refresh after a user clicks the verify
+     * link), so we read the authoritative value from the Management API.
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isEmailVerified(String userId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(getManagementToken());
+
+        ResponseEntity<Map> res = restTemplate.exchange(
+            userUri(userId), HttpMethod.GET, new HttpEntity<>(headers), Map.class);
+
+        Object verified = (res.getBody() == null) ? null : res.getBody().get("email_verified");
+        return Boolean.TRUE.equals(verified);
+    }
+
     /** PATCHes user_metadata for the given Auth0 user ID. */
     public void patchUserMetadata(String userId, Map<String, Object> metadata) {
         HttpHeaders headers = new HttpHeaders();

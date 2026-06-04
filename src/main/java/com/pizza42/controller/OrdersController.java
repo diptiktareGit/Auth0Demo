@@ -34,6 +34,14 @@ public class OrdersController {
 
         String userId = jwt.getSubject();
 
+        // Server-side email-verification guard — authoritative live check against
+        if (!managementService.isEmailVerified(userId)) {
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("error", "email_not_verified");
+            err.put("message", "Please verify your email address before placing an order.");
+            return ResponseEntity.status(403).body(err);
+        }
+
         Map<String, Object> order = new LinkedHashMap<>();
         order.put("id", UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         order.put("userId", userId);
@@ -83,8 +91,6 @@ public class OrdersController {
         if (memOrders != null && !memOrders.isEmpty()) {
             return ResponseEntity.ok(memOrders);
         }
-
-        // 2. Fallback: reload from Auth0 user_metadata after a server restart
         try {
             Map<String, Object> meta = managementService.getUserMetadata(userId);
             Object saved = meta.get("orders");

@@ -5,15 +5,11 @@
 // Feature 2: Proceed to Checkout (email check → payment page)
 async function placeOrder() {
   if (!currentUser) {
-    // After login, return directly to the payment page
     await client.loginWithRedirect({ appState: { targetUrl: 'payment' } });
     return;
   }
 
   // Feature 2: Email Verification Guard
-  // The cached ID token from login still says email_verified:false even after
-  // the user clicks the verification link. So if it looks unverified, force a
-  // FRESH token (bypassing the SDK cache) and re-read the profile before deciding.
   if (!currentUser.email_verified) {
     hide('email-warn');
     html('order-feedback', '<div class="alert alert-warn">⏳ Checking your verification status…</div>');
@@ -105,7 +101,11 @@ async function submitOrder() {
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ items, total, delivery })
     });
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    if (!res.ok) {
+      let msg = `Order failed (${res.status})`;
+      try { const e = await res.json(); if (e.message) msg = e.message; } catch (_) {}
+      throw new Error(msg);
+    }
 
     const order = await res.json();
 
